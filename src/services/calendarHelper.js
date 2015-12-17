@@ -121,6 +121,10 @@ angular
       var startOfMonth = moment(currentDay).startOf('month');
       var day = startOfMonth.clone().startOf('week');
       var endOfMonthView = moment(currentDay).endOf('month').endOf('week');
+
+      var diff = endOfMonthView.diff(startOfMonth, 'days') + 2;
+      endOfMonthView = moment(endOfMonthView).add(43 - diff, 'days');
+
       var eventsInPeriod;
       if (calendarConfig.displayAllMonthEvents) {
         eventsInPeriod = filterEventsInPeriod(events, day, endOfMonthView);

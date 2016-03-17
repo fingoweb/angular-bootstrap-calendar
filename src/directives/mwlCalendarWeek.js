@@ -69,6 +69,15 @@ angular
 
     };
 
+    vm.dayClicked = function(day, dayClickedFirstRun, $event) {
+      if (!dayClickedFirstRun) {
+        vm.onTimespanClick({
+          calendarDate: day.date.toDate(),
+          $event: $event
+        });
+      }
+    };
+
     vm.tempTimeChanged = function(event, minuteChunksMoved) {
       var minutesDiff = minuteChunksMoved * vm.dayViewSplit;
       event.tempStartsAt = moment(event.startsAt).add(minutesDiff, 'minutes').toDate();

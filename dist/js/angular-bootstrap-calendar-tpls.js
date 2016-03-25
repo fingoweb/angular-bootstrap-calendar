@@ -520,6 +520,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      vm.weekDays = calendarHelper.getWeekDayNames();
 
+	      vm.formatDate = function(date, format) {
+	        return moment(date).format(format);
+	      };
+
 	      vm.view = calendarHelper.getMonthView(vm.events, vm.currentDay, vm.cellModifier);
 	      var rows = Math.floor(vm.view.length / 7);
 	      vm.monthOffsets = [];
@@ -782,11 +786,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	      }
 	    };
-
 	    vm.eventClicked = function(event, eventClickedFirstRun, $event) {
 	      if (!eventClickedFirstRun) {
 	        vm.onEventClick({
-	          calendarEvent: event,
+	          event: event,
 	          $event: $event
 	        });
 	      }

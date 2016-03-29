@@ -276,6 +276,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        editEventHtml: '=',
 	        deleteEventHtml: '=',
 	        cellIsOpen: '=',
+	        selectedEvent: '=',
 	        onEventClick: '&',
 	        onEventTimesChanged: '&',
 	        onEditEventClick: '&',
@@ -490,10 +491,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      vm.weekDays = calendarHelper.getWeekDayNames();
 
-	      vm.formatDate = function(date, format) {
-	        return moment(date).format(format);
-	      };
-
 	      vm.view = calendarHelper.getMonthView(vm.events, vm.currentDay, vm.cellModifier);
 	      var rows = Math.floor(vm.view.length / 7);
 	      vm.monthOffsets = [];
@@ -510,8 +507,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	        });
 	      }
-
 	    });
+
+	    vm.formatDate = function(date, format) {
+	      return moment(date).format(format);
+	    };
 
 	    vm.dayClicked = function(day, dayClickedFirstRun, $event) {
 
@@ -596,6 +596,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        cellIsOpen: '=',
 	        onTimespanClick: '=',
 	        cellModifier: '=',
+	        selectedEvent: '=',
 	        cellTemplateUrl: '@',
 	        cellEventsTemplateUrl: '@'
 	      },
@@ -744,10 +745,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	      }
 	    };
+
 	    vm.eventClicked = function(event, eventClickedFirstRun, $event) {
 	      if (!eventClickedFirstRun) {
 	        vm.onEventClick({
-	          event: event,
+	          calendarEvent: event,
 	          $event: $event
 	        });
 	      }
@@ -773,7 +775,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        dayViewStart: '=',
 	        dayViewEnd: '=',
 	        dayViewSplit: '=',
-	        onTimespanClick: '='
+	        onTimespanClick: '=',
+	        selectedEvent: '='
 	      },
 	      controller: 'MwlCalendarWeekCtrl as vm',
 	      link: function(scope, element, attrs, calendarCtrl) {

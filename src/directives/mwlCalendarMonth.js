@@ -34,17 +34,17 @@ angular
       return moment(date).format(format);
     };
 
-    vm.isExpanded = function(id) {
-      return vm.expandedId === id;
+    vm.isExpanded = function(date) {
+      return vm.expandedDate === vm.formatDate(date, 'Y-MM-DD');
     };
 
-    vm.expand = function(id, $event) {
-      vm.expandedId = id;
+    vm.expand = function(date, $event) {
+      vm.expandedDate = date;
       $event.stopPropagation();
     };
 
     vm.collapse = function($event) {
-      vm.expandedId = null;
+      vm.expandedDate = null;
       $event.stopPropagation();
     };
 
@@ -55,6 +55,14 @@ angular
         return false;
       }
       return true;
+    };
+
+    vm.isDaySelected = function(date) {
+      return !vm.isExpanded(date) && !vm.selectedEvent.id && !!vm.selectedEvent.date && vm.formatDate(date, 'Y-MM-DD') === vm.selectedEvent.date;
+    };
+
+    vm.isEventSelected = function(date) {
+      return !vm.isExpanded(date) && !!vm.selectedEvent.id && vm.formatDate(date, 'Y-MM-DD') === vm.selectedEvent.date;
     };
 
     vm.dayClicked = function(day, dayClickedFirstRun, $event) {

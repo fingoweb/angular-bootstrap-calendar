@@ -34,6 +34,7 @@
     cell-template-url="{{ vm.monthCellTemplateUrl }}"
     cell-events-template-url="{{ vm.monthCellEventsTemplateUrl }}"
     ng-switch-when="month"
+    selected-event="vm.selectedEvent"
     ></mwl-calendar-month>
 
   <mwl-calendar-week
@@ -46,6 +47,7 @@
     day-view-split="vm.dayViewSplit"
     on-timespan-click="vm.onTimespanClick"
     ng-switch-when="week"
+    selected-event="vm.selectedEvent"
     ></mwl-calendar-week>
 
   <mwl-calendar-day

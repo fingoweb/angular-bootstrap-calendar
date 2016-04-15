@@ -10,7 +10,6 @@ angular
     vm.calendarConfig = calendarConfig;
 
     $scope.$on('calendar.refreshView', function() {
-
       vm.weekDays = calendarHelper.getWeekDayNames();
 
       vm.view = calendarHelper.getMonthView(vm.events, vm.currentDay, vm.cellModifier);
@@ -29,12 +28,40 @@ angular
           }
         });
       }
-
     });
 
-    vm.dayClicked = function(day, dayClickedFirstRun, $event) {
+    vm.formatDate = function(date, format) {
+      return moment(date).format(format);
+    };
 
+    vm.isExpanded = function(id) {
+      return vm.expandedId === id;
+    };
+
+    vm.expand = function(id, $event) {
+      vm.expandedId = id;
+      $event.stopPropagation();
+    };
+
+    vm.collapse = function($event) {
+      vm.expandedId = null;
+      $event.stopPropagation();
+    };
+
+    vm.collapseWithCheck = function(day, $event) {
+      var anotherDayClicked = vm.formatDate(day, 'Y-MM-DD') !== vm.expandedId;
+      if (anotherDayClicked) {
+        vm.collapse($event);
+        return false;
+      }
+      return true;
+    };
+
+    vm.dayClicked = function(day, dayClickedFirstRun, $event) {
       if (!dayClickedFirstRun) {
+        if (vm.collapseWithCheck(day.date, $event)) {
+          return;
+        }
         vm.onTimespanClick({
           calendarDate: day.date.toDate(),
           $event: $event
@@ -55,6 +82,16 @@ angular
         vm.cellIsOpen = true;
       }
 
+    };
+
+    vm.eventClicked = function(event, eventClickedFirstRun, $event) {
+      if (!eventClickedFirstRun) {
+        vm.collapseWithCheck(event.startsAt, $event);
+        vm.onEventClick({
+          calendarEvent: event,
+          $event: $event
+        });
+      }
     };
 
     vm.highlightEvent = function(event, shouldAddClass) {
@@ -98,6 +135,7 @@ angular
         events: '=',
         currentDay: '=',
         onEventClick: '=',
+        selectedEvent: '=',
         onEditEventClick: '=',
         onDeleteEventClick: '=',
         onEventTimesChanged: '=',

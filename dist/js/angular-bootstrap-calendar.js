@@ -276,7 +276,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        editEventHtml: '=',
 	        deleteEventHtml: '=',
 	        cellIsOpen: '=',
-	        selectedEvent: '=',
 	        onEventClick: '&',
 	        onEventTimesChanged: '&',
 	        onEditEventClick: '&',
@@ -288,7 +287,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        dayViewEnd: '@',
 	        dayViewSplit: '@',
 	        monthCellTemplateUrl: '@',
-	        monthCellEventsTemplateUrl: '@'
+	        monthCellEventsTemplateUrl: '@',
+	        selectedEvent: '='
 	      },
 	      controller: 'MwlCalendarCtrl as vm',
 	      bindToController: true
@@ -488,7 +488,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    vm.calendarConfig = calendarConfig;
 
 	    $scope.$on('calendar.refreshView', function() {
-
 	      vm.weekDays = calendarHelper.getWeekDayNames();
 
 	      vm.view = calendarHelper.getMonthView(vm.events, vm.currentDay, vm.cellModifier);
@@ -513,9 +512,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return moment(date).format(format);
 	    };
 
-	    vm.dayClicked = function(day, dayClickedFirstRun, $event) {
+	    vm.isExpanded = function(id) {
+	      return vm.expandedId === id;
+	    };
 
+	    vm.expand = function(id, $event) {
+	      vm.expandedId = id;
+	      $event.stopPropagation();
+	    };
+
+	    vm.collapse = function($event) {
+	      vm.expandedId = null;
+	      $event.stopPropagation();
+	    };
+
+	    vm.collapseWithCheck = function(day, $event) {
+	      var anotherDayClicked = vm.formatDate(day, 'Y-MM-DD') !== vm.expandedId;
+	      if (anotherDayClicked) {
+	        vm.collapse($event);
+	        return false;
+	      }
+	      return true;
+	    };
+
+	    vm.dayClicked = function(day, dayClickedFirstRun, $event) {
 	      if (!dayClickedFirstRun) {
+	        if (vm.collapseWithCheck(day.date, $event)) {
+	          return;
+	        }
 	        vm.onTimespanClick({
 	          calendarDate: day.date.toDate(),
 	          $event: $event
@@ -540,6 +564,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    vm.eventClicked = function(event, eventClickedFirstRun, $event) {
 	      if (!eventClickedFirstRun) {
+	        vm.collapseWithCheck(event.startsAt, $event);
 	        vm.onEventClick({
 	          calendarEvent: event,
 	          $event: $event
@@ -588,6 +613,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        events: '=',
 	        currentDay: '=',
 	        onEventClick: '=',
+	        selectedEvent: '=',
 	        onEditEventClick: '=',
 	        onDeleteEventClick: '=',
 	        onEventTimesChanged: '=',
@@ -596,7 +622,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        cellIsOpen: '=',
 	        onTimespanClick: '=',
 	        cellModifier: '=',
-	        selectedEvent: '=',
 	        cellTemplateUrl: '@',
 	        cellEventsTemplateUrl: '@'
 	      },
@@ -745,11 +770,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	      }
 	    };
-
 	    vm.eventClicked = function(event, eventClickedFirstRun, $event) {
 	      if (!eventClickedFirstRun) {
 	        vm.onEventClick({
-	          calendarEvent: event,
+	          event: event,
 	          $event: $event
 	        });
 	      }
@@ -771,12 +795,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        events: '=',
 	        currentDay: '=',
 	        onEventClick: '=',
+	        selectedEvent: '=',
 	        onEventTimesChanged: '=',
 	        dayViewStart: '=',
 	        dayViewEnd: '=',
 	        dayViewSplit: '=',
-	        onTimespanClick: '=',
-	        selectedEvent: '='
+	        onTimespanClick: '='
 	      },
 	      controller: 'MwlCalendarWeekCtrl as vm',
 	      link: function(scope, element, attrs, calendarCtrl) {

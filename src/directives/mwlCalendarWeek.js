@@ -77,6 +77,14 @@ angular
         });
       }
     };
+    vm.eventClicked = function(event, eventClickedFirstRun, $event) {
+      if (!eventClickedFirstRun) {
+        vm.onEventClick({
+          event: event,
+          $event: $event
+        });
+      }
+    };
 
     vm.tempTimeChanged = function(event, minuteChunksMoved) {
       var minutesDiff = minuteChunksMoved * vm.dayViewSplit;
@@ -94,6 +102,7 @@ angular
         events: '=',
         currentDay: '=',
         onEventClick: '=',
+        selectedEvent: '=',
         onEventTimesChanged: '=',
         dayViewStart: '=',
         dayViewEnd: '=',

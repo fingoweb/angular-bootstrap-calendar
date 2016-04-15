@@ -288,7 +288,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        editEventHtml: '=',
 	        deleteEventHtml: '=',
 	        cellIsOpen: '=',
-	        selectedEvent: '=',
 	        onEventClick: '&',
 	        onEventTimesChanged: '&',
 	        onEditEventClick: '&',
@@ -300,7 +299,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        dayViewEnd: '@',
 	        dayViewSplit: '@',
 	        monthCellTemplateUrl: '@',
-	        monthCellEventsTemplateUrl: '@'
+	        monthCellEventsTemplateUrl: '@',
+	        selectedEvent: '='
 	      },
 	      controller: 'MwlCalendarCtrl as vm',
 	      bindToController: true
@@ -313,7 +313,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 18 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"cal-context\" ng-switch=\"vm.view\">\r\n\r\n  <div class=\"alert alert-danger\" ng-switch-default>The value passed to the view attribute of the calendar is not set</div>\r\n\r\n  <div class=\"alert alert-danger\" ng-hide=\"vm.currentDay\">The value passed to current-day attribute of the calendar is not set</div>\r\n\r\n  <mwl-calendar-year\r\n    events=\"vm.events\"\r\n    current-day=\"vm.currentDay\"\r\n    on-event-click=\"vm.onEventClick\"\r\n    on-event-times-changed=\"vm.onEventTimesChanged\"\r\n    on-edit-event-click=\"vm.onEditEventClick\"\r\n    on-delete-event-click=\"vm.onDeleteEventClick\"\r\n    on-timespan-click=\"vm.onTimespanClick\"\r\n    edit-event-html=\"vm.editEventHtml\"\r\n    delete-event-html=\"vm.deleteEventHtml\"\r\n    cell-is-open=\"vm.cellIsOpen\"\r\n    cell-modifier=\"vm.cellModifier\"\r\n    ng-switch-when=\"year\"\r\n  ></mwl-calendar-year>\r\n\r\n  <mwl-calendar-month\r\n    events=\"vm.events\"\r\n    current-day=\"vm.currentDay\"\r\n    on-event-click=\"vm.onEventClick\"\r\n    on-event-times-changed=\"vm.onEventTimesChanged\"\r\n    on-edit-event-click=\"vm.onEditEventClick\"\r\n    on-delete-event-click=\"vm.onDeleteEventClick\"\r\n    on-timespan-click=\"vm.onTimespanClick\"\r\n    edit-event-html=\"vm.editEventHtml\"\r\n    delete-event-html=\"vm.deleteEventHtml\"\r\n    cell-is-open=\"vm.cellIsOpen\"\r\n    cell-modifier=\"vm.cellModifier\"\r\n    cell-template-url=\"{{ vm.monthCellTemplateUrl }}\"\r\n    cell-events-template-url=\"{{ vm.monthCellEventsTemplateUrl }}\"\r\n    selected-event=\"vm.selectedEvent\"\r\n    ng-switch-when=\"month\"\r\n    ></mwl-calendar-month>\r\n\r\n  <mwl-calendar-week\r\n    events=\"vm.events\"\r\n    current-day=\"vm.currentDay\"\r\n    on-event-click=\"vm.onEventClick\"\r\n    on-event-times-changed=\"vm.onEventTimesChanged\"\r\n    day-view-start=\"vm.dayViewStart\"\r\n    day-view-end=\"vm.dayViewEnd\"\r\n    day-view-split=\"vm.dayViewSplit\"\r\n    on-timespan-click=\"vm.onTimespanClick\"\r\n    selected-event=\"vm.selectedEvent\"\r\n    ng-switch-when=\"week\"\r\n    ></mwl-calendar-week>\r\n\r\n  <mwl-calendar-day\r\n    events=\"vm.events\"\r\n    current-day=\"vm.currentDay\"\r\n    on-event-click=\"vm.onEventClick\"\r\n    on-event-times-changed=\"vm.onEventTimesChanged\"\r\n    on-timespan-click=\"vm.onTimespanClick\"\r\n    day-view-start=\"vm.dayViewStart\"\r\n    day-view-end=\"vm.dayViewEnd\"\r\n    day-view-split=\"vm.dayViewSplit\"\r\n    ng-switch-when=\"day\"\r\n    ></mwl-calendar-day>\r\n</div>\r\n";
+	module.exports = "<div class=\"cal-context\" ng-switch=\"vm.view\">\r\n\r\n  <div class=\"alert alert-danger\" ng-switch-default>The value passed to the view attribute of the calendar is not set</div>\r\n\r\n  <div class=\"alert alert-danger\" ng-hide=\"vm.currentDay\">The value passed to current-day attribute of the calendar is not set</div>\r\n\r\n  <mwl-calendar-year\r\n    events=\"vm.events\"\r\n    current-day=\"vm.currentDay\"\r\n    on-event-click=\"vm.onEventClick\"\r\n    on-event-times-changed=\"vm.onEventTimesChanged\"\r\n    on-edit-event-click=\"vm.onEditEventClick\"\r\n    on-delete-event-click=\"vm.onDeleteEventClick\"\r\n    on-timespan-click=\"vm.onTimespanClick\"\r\n    edit-event-html=\"vm.editEventHtml\"\r\n    delete-event-html=\"vm.deleteEventHtml\"\r\n    cell-is-open=\"vm.cellIsOpen\"\r\n    cell-modifier=\"vm.cellModifier\"\r\n    ng-switch-when=\"year\"\r\n  ></mwl-calendar-year>\r\n\r\n  <mwl-calendar-month\r\n    events=\"vm.events\"\r\n    current-day=\"vm.currentDay\"\r\n    on-event-click=\"vm.onEventClick\"\r\n    on-event-times-changed=\"vm.onEventTimesChanged\"\r\n    on-edit-event-click=\"vm.onEditEventClick\"\r\n    on-delete-event-click=\"vm.onDeleteEventClick\"\r\n    on-timespan-click=\"vm.onTimespanClick\"\r\n    edit-event-html=\"vm.editEventHtml\"\r\n    delete-event-html=\"vm.deleteEventHtml\"\r\n    cell-is-open=\"vm.cellIsOpen\"\r\n    cell-modifier=\"vm.cellModifier\"\r\n    cell-template-url=\"{{ vm.monthCellTemplateUrl }}\"\r\n    cell-events-template-url=\"{{ vm.monthCellEventsTemplateUrl }}\"\r\n    ng-switch-when=\"month\"\r\n    selected-event=\"vm.selectedEvent\"\r\n    ></mwl-calendar-month>\r\n\r\n  <mwl-calendar-week\r\n    events=\"vm.events\"\r\n    current-day=\"vm.currentDay\"\r\n    on-event-click=\"vm.onEventClick\"\r\n    on-event-times-changed=\"vm.onEventTimesChanged\"\r\n    day-view-start=\"vm.dayViewStart\"\r\n    day-view-end=\"vm.dayViewEnd\"\r\n    day-view-split=\"vm.dayViewSplit\"\r\n    on-timespan-click=\"vm.onTimespanClick\"\r\n    ng-switch-when=\"week\"\r\n    selected-event=\"vm.selectedEvent\"\r\n    ></mwl-calendar-week>\r\n\r\n  <mwl-calendar-day\r\n    events=\"vm.events\"\r\n    current-day=\"vm.currentDay\"\r\n    on-event-click=\"vm.onEventClick\"\r\n    on-event-times-changed=\"vm.onEventTimesChanged\"\r\n    on-timespan-click=\"vm.onTimespanClick\"\r\n    day-view-start=\"vm.dayViewStart\"\r\n    day-view-end=\"vm.dayViewEnd\"\r\n    day-view-split=\"vm.dayViewSplit\"\r\n    ng-switch-when=\"day\"\r\n    ></mwl-calendar-day>\r\n</div>\r\n";
 
 /***/ },
 /* 19 */
@@ -518,7 +518,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    vm.calendarConfig = calendarConfig;
 
 	    $scope.$on('calendar.refreshView', function() {
-
 	      vm.weekDays = calendarHelper.getWeekDayNames();
 
 	      vm.view = calendarHelper.getMonthView(vm.events, vm.currentDay, vm.cellModifier);
@@ -543,9 +542,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return moment(date).format(format);
 	    };
 
-	    vm.dayClicked = function(day, dayClickedFirstRun, $event) {
+	    vm.isExpanded = function(id) {
+	      return vm.expandedId === id;
+	    };
 
+	    vm.expand = function(id, $event) {
+	      vm.expandedId = id;
+	      $event.stopPropagation();
+	    };
+
+	    vm.collapse = function($event) {
+	      vm.expandedId = null;
+	      $event.stopPropagation();
+	    };
+
+	    vm.collapseWithCheck = function(day, $event) {
+	      var anotherDayClicked = vm.formatDate(day, 'Y-MM-DD') !== vm.expandedId;
+	      if (anotherDayClicked) {
+	        vm.collapse($event);
+	        return false;
+	      }
+	      return true;
+	    };
+
+	    vm.dayClicked = function(day, dayClickedFirstRun, $event) {
 	      if (!dayClickedFirstRun) {
+	        if (vm.collapseWithCheck(day.date, $event)) {
+	          return;
+	        }
 	        vm.onTimespanClick({
 	          calendarDate: day.date.toDate(),
 	          $event: $event
@@ -570,6 +594,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    vm.eventClicked = function(event, eventClickedFirstRun, $event) {
 	      if (!eventClickedFirstRun) {
+	        vm.collapseWithCheck(event.startsAt, $event);
 	        vm.onEventClick({
 	          calendarEvent: event,
 	          $event: $event
@@ -618,6 +643,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        events: '=',
 	        currentDay: '=',
 	        onEventClick: '=',
+	        selectedEvent: '=',
 	        onEditEventClick: '=',
 	        onDeleteEventClick: '=',
 	        onEventTimesChanged: '=',
@@ -626,7 +652,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        cellIsOpen: '=',
 	        onTimespanClick: '=',
 	        cellModifier: '=',
-	        selectedEvent: '=',
 	        cellTemplateUrl: '@',
 	        cellEventsTemplateUrl: '@'
 	      },
@@ -787,11 +812,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	      }
 	    };
-
 	    vm.eventClicked = function(event, eventClickedFirstRun, $event) {
 	      if (!eventClickedFirstRun) {
 	        vm.onEventClick({
-	          calendarEvent: event,
+	          event: event,
 	          $event: $event
 	        });
 	      }
@@ -813,12 +837,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        events: '=',
 	        currentDay: '=',
 	        onEventClick: '=',
+	        selectedEvent: '=',
 	        onEventTimesChanged: '=',
 	        dayViewStart: '=',
 	        dayViewEnd: '=',
 	        dayViewSplit: '=',
-	        onTimespanClick: '=',
-	        selectedEvent: '='
+	        onTimespanClick: '='
 	      },
 	      controller: 'MwlCalendarWeekCtrl as vm',
 	      link: function(scope, element, attrs, calendarCtrl) {

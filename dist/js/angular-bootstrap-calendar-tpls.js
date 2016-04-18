@@ -547,7 +547,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    vm.expand = function(date, $event) {
-	      vm.expandedDate = date;
+	      vm.expandedDate = vm.formatDate(date, 'Y-MM-DD');
 	      $event.stopPropagation();
 	    };
 
@@ -571,6 +571,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    vm.isEventSelected = function(date) {
 	      return !vm.isExpanded(date) && !!vm.selectedEvent.id && vm.formatDate(date, 'Y-MM-DD') === vm.selectedEvent.date;
+	    };
+
+	    vm.isSunday = function(date) {
+	     return vm.formatDate(date, 'd') === '0';
 	    };
 
 	    vm.dayClicked = function(day, dayClickedFirstRun, $event) {

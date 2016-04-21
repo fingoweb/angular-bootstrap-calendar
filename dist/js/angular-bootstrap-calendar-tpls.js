@@ -541,7 +541,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    vm.formatDate = function(date, format) {
 	      return moment(date).format(format);
 	    };
-
 	    vm.isExpanded = function(date) {
 	      return vm.expandedDate === vm.formatDate(date, 'Y-MM-DD');
 	    };
@@ -777,6 +776,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        vm.view = calendarHelper.getWeekView(vm.events, vm.currentDay);
 	      }
 	    });
+
+	    vm.formatDate = function(date, format) {
+	      return moment(date).format(format);
+	    };
 
 	    vm.weekDragged = function(event, daysDiff, minuteChunksMoved) {
 

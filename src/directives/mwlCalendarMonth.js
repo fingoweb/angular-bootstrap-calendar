@@ -33,7 +33,6 @@ angular
     vm.formatDate = function(date, format) {
       return moment(date).format(format);
     };
-
     vm.isExpanded = function(date) {
       return vm.expandedDate === vm.formatDate(date, 'Y-MM-DD');
     };

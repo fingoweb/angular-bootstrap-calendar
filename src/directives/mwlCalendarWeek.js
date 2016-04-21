@@ -31,6 +31,10 @@ angular
       }
     });
 
+    vm.formatDate = function(date, format) {
+      return moment(date).format(format);
+    };
+
     vm.weekDragged = function(event, daysDiff, minuteChunksMoved) {
 
       var newStart = moment(event.startsAt).add(daysDiff, 'days');

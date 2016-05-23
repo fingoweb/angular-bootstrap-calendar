@@ -11,7 +11,7 @@ angular
     vm.showTimes = calendarConfig.showTimesOnWeekView;
     vm.$sce = $sce;
 
-    $scope.$on('calendar.refreshView', function() {
+    vm.setCalParams = function() {
       vm.dayViewSplit = vm.dayViewSplit || 30;
       vm.dayViewHeight = calendarHelper.getDayViewHeight(
         vm.dayViewStart,
@@ -29,6 +29,12 @@ angular
       } else {
         vm.view = calendarHelper.getWeekView(vm.events, vm.currentDay);
       }
+    };
+    vm.setCalParams();
+
+    $scope.$on('calendar.refreshView', function() {
+      vm.setCalParams();
+
     });
 
     vm.formatDate = function(date, format) {

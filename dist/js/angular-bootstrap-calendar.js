@@ -487,7 +487,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var vm = this;
 	    vm.calendarConfig = calendarConfig;
 
-	    $scope.$on('calendar.refreshView', function() {
+	    vm.setCalParams = function() {
 	      vm.weekDays = calendarHelper.getWeekDayNames();
 
 	      vm.view = calendarHelper.getMonthView(vm.events, vm.currentDay, vm.cellModifier);
@@ -496,6 +496,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      for (var i = 0; i < rows; i++) {
 	        vm.monthOffsets.push(i * 7);
 	      }
+	    };
+	    vm.setCalParams();
+
+	    $scope.$on('calendar.refreshView', function() {
+	      vm.setCalParams();
 
 	      //Auto open the calendar to the current day if set
 	      if (vm.cellIsOpen && !vm.openRowIndex) {
@@ -715,7 +720,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    vm.showTimes = calendarConfig.showTimesOnWeekView;
 	    vm.$sce = $sce;
 
-	    $scope.$on('calendar.refreshView', function() {
+	    vm.setCalParams = function() {
 	      vm.dayViewSplit = vm.dayViewSplit || 30;
 	      vm.dayViewHeight = calendarHelper.getDayViewHeight(
 	        vm.dayViewStart,
@@ -733,6 +738,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } else {
 	        vm.view = calendarHelper.getWeekView(vm.events, vm.currentDay);
 	      }
+	    };
+	    vm.setCalParams();
+
+	    $scope.$on('calendar.refreshView', function() {
+	      vm.setCalParams();
+
 	    });
 
 	    vm.formatDate = function(date, format) {

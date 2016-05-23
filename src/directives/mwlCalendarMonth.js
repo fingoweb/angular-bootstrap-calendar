@@ -9,7 +9,7 @@ angular
     var vm = this;
     vm.calendarConfig = calendarConfig;
 
-    $scope.$on('calendar.refreshView', function() {
+    vm.setCalParams = function() {
       vm.weekDays = calendarHelper.getWeekDayNames();
 
       vm.view = calendarHelper.getMonthView(vm.events, vm.currentDay, vm.cellModifier);
@@ -18,6 +18,11 @@ angular
       for (var i = 0; i < rows; i++) {
         vm.monthOffsets.push(i * 7);
       }
+    };
+    vm.setCalParams();
+
+    $scope.$on('calendar.refreshView', function() {
+      vm.setCalParams();
 
       //Auto open the calendar to the current day if set
       if (vm.cellIsOpen && !vm.openRowIndex) {

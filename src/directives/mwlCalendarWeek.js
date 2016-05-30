@@ -61,6 +61,10 @@ angular
       });
     };
 
+    vm.isDaySelected = function(date) {
+      return !vm.selectedEvent.id && !!vm.selectedEvent.date && vm.formatDate(date, 'Y-MM-DD') === vm.selectedEvent.date;
+    };
+
     vm.weekResized = function(event, edge, daysDiff) {
 
       var start = moment(event.startsAt);
@@ -76,7 +80,6 @@ angular
         calendarNewEventStart: start.toDate(),
         calendarNewEventEnd: end.toDate()
       });
-
     };
 
     vm.dayClicked = function(day, dayClickedFirstRun, $event) {

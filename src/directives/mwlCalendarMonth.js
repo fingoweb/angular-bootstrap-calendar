@@ -8,7 +8,6 @@ angular
 
     var vm = this;
     vm.calendarConfig = calendarConfig;
-
     vm.setCalParams = function() {
       vm.weekDays = calendarHelper.getWeekDayNames();
 

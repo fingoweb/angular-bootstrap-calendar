@@ -7,7 +7,6 @@ angular
   .controller('MwlCalendarWeekCtrl', function($scope, $sce, moment, calendarHelper, calendarConfig) {
 
     var vm = this;
-
     vm.showTimes = calendarConfig.showTimesOnWeekView;
     vm.$sce = $sce;
 

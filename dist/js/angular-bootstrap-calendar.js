@@ -288,7 +288,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        dayViewSplit: '@',
 	        monthCellTemplateUrl: '@',
 	        monthCellEventsTemplateUrl: '@',
-	        selectedEvent: '='
+	        selectedEvent: '=',
+	        isPreviousScope: '=?'
 	      },
 	      controller: 'MwlCalendarCtrl as vm',
 	      bindToController: true
@@ -486,7 +487,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var vm = this;
 	    vm.calendarConfig = calendarConfig;
-
 	    vm.setCalParams = function() {
 	      vm.weekDays = calendarHelper.getWeekDayNames();
 
@@ -716,7 +716,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  .controller('MwlCalendarWeekCtrl', ["$scope", "$sce", "moment", "calendarHelper", "calendarConfig", function($scope, $sce, moment, calendarHelper, calendarConfig) {
 
 	    var vm = this;
-
 	    vm.showTimes = calendarConfig.showTimesOnWeekView;
 	    vm.$sce = $sce;
 

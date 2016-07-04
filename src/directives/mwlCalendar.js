@@ -133,7 +133,8 @@ angular
         dayViewSplit: '@',
         monthCellTemplateUrl: '@',
         monthCellEventsTemplateUrl: '@',
-        selectedEvent: '='
+        selectedEvent: '=',
+        isPreviousScope: '=?'
       },
       controller: 'MwlCalendarCtrl as vm',
       bindToController: true

@@ -134,12 +134,22 @@ angular
       var view = [];
       var today = moment().startOf('day');
 
+      var eventsMap = {};
+      eventsInPeriod.map(function(element) {
+        if (!eventsMap[moment(element.startsAt).format('Y-MM-DD')]) {
+          eventsMap[moment(element.startsAt).format('Y-MM-DD')] = [];
+        }
+
+        eventsMap[moment(element.startsAt).format('Y-MM-DD')].push(element);
+        return element;
+      });
+
       while (day.isBefore(endOfMonthView)) {
 
         var inMonth = day.month() === moment(currentDay).month();
         var monthEvents = [];
-        if (inMonth || calendarConfig.displayAllMonthEvents) {
-          monthEvents = filterEventsInPeriod(eventsInPeriod, day, day.clone().endOf('day'));
+        if ((inMonth || calendarConfig.displayAllMonthEvents) && eventsMap[day.format('Y-MM-DD')]) {
+          monthEvents = eventsMap[day.format('Y-MM-DD')];
         }
 
         var cell = {

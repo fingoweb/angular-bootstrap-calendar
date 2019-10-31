@@ -514,6 +514,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  .controller('MwlCalendarMonthCtrl', ["$scope", "moment", "calendarHelper", "calendarConfig", function($scope, moment, calendarHelper, calendarConfig) {
 
 	    var vm = this;
+
+	    vm.events = vm.events || [];
+
 	    vm.calendarConfig = calendarConfig;
 
 	    $scope.$on('calendar.refreshView', function() {

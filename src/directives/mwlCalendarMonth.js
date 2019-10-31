@@ -7,6 +7,9 @@ angular
   .controller('MwlCalendarMonthCtrl', function($scope, moment, calendarHelper, calendarConfig) {
 
     var vm = this;
+
+    vm.events = vm.events || [];
+
     vm.calendarConfig = calendarConfig;
 
     $scope.$on('calendar.refreshView', function() {

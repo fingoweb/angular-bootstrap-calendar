@@ -486,6 +486,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  .controller('MwlCalendarMonthCtrl', ["$scope", "moment", "calendarHelper", "calendarConfig", function($scope, moment, calendarHelper, calendarConfig) {
 
 	    var vm = this;
+
+	    vm.events = vm.events || [];
+
 	    vm.calendarConfig = calendarConfig;
 	    vm.setCalParams = function() {
 	      vm.weekDays = calendarHelper.getWeekDayNames();

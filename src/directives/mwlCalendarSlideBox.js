@@ -11,12 +11,15 @@ angular
     vm.calendarConfig = calendarConfig;
 
     vm.isCollapsed = true;
-    $scope.$watch('vm.isOpen', function(isOpen) {
-      //events must be populated first to set the element height before animation will work
-      $timeout(function() {
-        vm.isCollapsed = !isOpen;
+
+    vm.$onInit = function() {
+      $scope.$watch('vm.isOpen', function(isOpen) {
+        //events must be populated first to set the element height before animation will work
+        $timeout(function() {
+          vm.isCollapsed = !isOpen;
+        });
       });
-    });
+    };
 
   })
   .directive('mwlCalendarSlideBox', function(calendarUseTemplates) {

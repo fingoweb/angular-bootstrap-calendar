@@ -19,11 +19,13 @@ angular
       $scope.$apply();
     }
 
-    $element.bind('click', onClick);
+    vm.$onInit = function() {
+      $element.bind('click', onClick);
 
-    $scope.$on('$destroy', function() {
-      $element.unbind('click', onClick);
-    });
+      $scope.$on('$destroy', function() {
+        $element.unbind('click', onClick);
+      });
+    };
 
   })
   .directive('mwlDateModifier', function() {

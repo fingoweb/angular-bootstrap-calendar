@@ -7,6 +7,9 @@ angular
   .controller('MwlCalendarWeekCtrl', function($scope, $sce, moment, calendarHelper, calendarConfig) {
 
     var vm = this;
+
+    vm.events = vm.events || [];
+
     vm.showTimes = calendarConfig.showTimesOnWeekView;
     vm.$sce = $sce;
 
@@ -29,12 +32,14 @@ angular
         vm.view = calendarHelper.getWeekView(vm.events, vm.currentDay);
       }
     };
-    vm.setCalParams();
 
-    $scope.$on('calendar.refreshView', function() {
+    vm.$onInit = function() {
       vm.setCalParams();
 
-    });
+      $scope.$on('calendar.refreshView', function() {
+        vm.setCalParams();
+      });
+    };
 
     vm.formatDate = function(date, format) {
       return moment(date).format(format);

@@ -244,23 +244,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var eventsWatched = false;
 
-	    //Refresh the calendar when any of these variables change.
-	    $scope.$watchGroup([
-	      'vm.currentDay',
-	      'vm.view',
-	      'vm.cellIsOpen',
-	      function() {
-	        return moment.locale() + $locale.id; //Auto update the calendar when the locale changes
-	      }
-	    ], function() {
-	      if (!eventsWatched) {
-	        eventsWatched = true;
-	        //need to deep watch events hence why it isn't included in the watch group
-	        $scope.$watch('vm.events', refreshCalendar, true); //this will call refreshCalendar when the watcher starts (i.e. now)
-	      } else {
-	        refreshCalendar();
-	      }
-	    });
+	    vm.$onInit = function() {
+	      //Refresh the calendar when any of these variables change.
+	      $scope.$watchGroup([
+	        'vm.currentDay',
+	        'vm.view',
+	        'vm.cellIsOpen',
+	        function() {
+	          return moment.locale() + $locale.id; //Auto update the calendar when the locale changes
+	        }
+	      ], function() {
+	        if (!eventsWatched) {
+	          eventsWatched = true;
+	          //need to deep watch events hence why it isn't included in the watch group
+	          $scope.$watch('vm.events', refreshCalendar, true); //this will call refreshCalendar when the watcher starts (i.e. now)
+	        } else {
+	          refreshCalendar();
+	        }
+	      });
+	    };
 
 	  }])
 	  .directive('mwlCalendar', ["calendarUseTemplates", function(calendarUseTemplates) {
@@ -315,23 +317,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	    vm.calendarConfig = calendarConfig;
 	    vm.$sce = $sce;
 
-	    $scope.$on('calendar.refreshView', function() {
-	      vm.dayViewSplit = vm.dayViewSplit || 30;
-	      vm.dayViewHeight = calendarHelper.getDayViewHeight(
-	        vm.dayViewStart,
-	        vm.dayViewEnd,
-	        vm.dayViewSplit
-	      );
+	    vm.$onInit = function() {
+	      $scope.$on('calendar.refreshView', function() {
+	        vm.dayViewSplit = vm.dayViewSplit || 30;
+	        vm.dayViewHeight = calendarHelper.getDayViewHeight(
+	          vm.dayViewStart,
+	          vm.dayViewEnd,
+	          vm.dayViewSplit
+	        );
 
-	      vm.view = calendarHelper.getDayView(
-	        vm.events,
-	        vm.currentDay,
-	        vm.dayViewStart,
-	        vm.dayViewEnd,
-	        vm.dayViewSplit
-	      );
+	        vm.view = calendarHelper.getDayView(
+	          vm.events,
+	          vm.currentDay,
+	          vm.dayViewStart,
+	          vm.dayViewEnd,
+	          vm.dayViewSplit
+	        );
 
-	    });
+	      });
+	    };
 
 	    vm.eventDragComplete = function(event, minuteChunksMoved) {
 	      var minutesDiff = minuteChunksMoved * vm.dayViewSplit;
@@ -435,23 +439,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var originalLocale = moment.locale();
 
-	    $scope.$on('calendar.refreshView', function() {
+	    vm.$onInit = function() {
+	      $scope.$on('calendar.refreshView', function() {
 
-	      if (originalLocale !== moment.locale()) {
-	        originalLocale = moment.locale();
+	        if (originalLocale !== moment.locale()) {
+	          originalLocale = moment.locale();
+	          updateDays();
+	        }
+
+	      });
+
+	      $scope.$watchGroup([
+	        'vm.dayViewStart',
+	        'vm.dayViewEnd',
+	        'vm.dayViewSplit',
+	        'vm.currentDay'
+	      ], function() {
 	        updateDays();
-	      }
-
-	    });
-
-	    $scope.$watchGroup([
-	      'vm.dayViewStart',
-	      'vm.dayViewEnd',
-	      'vm.dayViewSplit',
-	      'vm.currentDay'
-	    ], function() {
-	      updateDays();
-	    });
+	      });
+	    };
 
 	  }])
 	  .directive('mwlCalendarHourList', ["calendarUseTemplates", function(calendarUseTemplates) {
@@ -486,6 +492,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  .controller('MwlCalendarMonthCtrl', ["$scope", "moment", "calendarHelper", "calendarConfig", function($scope, moment, calendarHelper, calendarConfig) {
 
 	    var vm = this;
+
+	    vm.events = vm.events || [];
+
 	    vm.calendarConfig = calendarConfig;
 	    vm.setCalParams = function() {
 	      vm.weekDays = calendarHelper.getWeekDayNames();
@@ -497,21 +506,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        vm.monthOffsets.push(i * 7);
 	      }
 	    };
-	    vm.setCalParams();
 
-	    $scope.$on('calendar.refreshView', function() {
+	    vm.$onInit = function() {
 	      vm.setCalParams();
 
-	      //Auto open the calendar to the current day if set
-	      if (vm.cellIsOpen && !vm.openRowIndex) {
-	        vm.openDayIndex = null;
-	        vm.view.forEach(function(day) {
-	          if (day.inMonth && moment(vm.currentDay).startOf('day').isSame(day.date)) {
-	            vm.dayClicked(day, true);
-	          }
-	        });
-	      }
-	    });
+	      $scope.$on('calendar.refreshView', function() {
+	        vm.setCalParams();
+
+	        //Auto open the calendar to the current day if set
+	        if (vm.cellIsOpen && !vm.openRowIndex) {
+	          vm.openDayIndex = null;
+	          vm.view.forEach(function(day) {
+	            if (day.inMonth && moment(vm.currentDay).startOf('day').isSame(day.date)) {
+	              vm.dayClicked(day, true);
+	            }
+	          });
+	        }
+	      });
+	    };
 
 	    vm.formatDate = function(date, format) {
 	      return moment(date).format(format);
@@ -668,12 +680,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    vm.calendarConfig = calendarConfig;
 
 	    vm.isCollapsed = true;
-	    $scope.$watch('vm.isOpen', function(isOpen) {
-	      //events must be populated first to set the element height before animation will work
-	      $timeout(function() {
-	        vm.isCollapsed = !isOpen;
+
+	    vm.$onInit = function() {
+	      $scope.$watch('vm.isOpen', function(isOpen) {
+	        //events must be populated first to set the element height before animation will work
+	        $timeout(function() {
+	          vm.isCollapsed = !isOpen;
+	        });
 	      });
-	    });
+	    };
 
 	  }])
 	  .directive('mwlCalendarSlideBox', ["calendarUseTemplates", function(calendarUseTemplates) {
@@ -716,6 +731,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  .controller('MwlCalendarWeekCtrl', ["$scope", "$sce", "moment", "calendarHelper", "calendarConfig", function($scope, $sce, moment, calendarHelper, calendarConfig) {
 
 	    var vm = this;
+
+	    vm.events = vm.events || [];
+
 	    vm.showTimes = calendarConfig.showTimesOnWeekView;
 	    vm.$sce = $sce;
 
@@ -738,12 +756,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        vm.view = calendarHelper.getWeekView(vm.events, vm.currentDay);
 	      }
 	    };
-	    vm.setCalParams();
 
-	    $scope.$on('calendar.refreshView', function() {
+	    vm.$onInit = function() {
 	      vm.setCalParams();
 
-	    });
+	      $scope.$on('calendar.refreshView', function() {
+	        vm.setCalParams();
+	      });
+	    };
 
 	    vm.formatDate = function(date, format) {
 	      return moment(date).format(format);
@@ -854,20 +874,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var vm = this;
 
-	    $scope.$on('calendar.refreshView', function() {
-	      vm.view = calendarHelper.getYearView(vm.events, vm.currentDay, vm.cellModifier);
+	    vm.$onInit = function() {
+	      $scope.$on('calendar.refreshView', function() {
+	        vm.view = calendarHelper.getYearView(vm.events, vm.currentDay, vm.cellModifier);
 
-	      //Auto open the calendar to the current day if set
-	      if (vm.cellIsOpen && !vm.openMonthIndex) {
-	        vm.openMonthIndex = null;
-	        vm.view.forEach(function(month) {
-	          if (moment(vm.currentDay).startOf('month').isSame(month.date)) {
-	            vm.monthClicked(month, true);
-	          }
-	        });
-	      }
+	        //Auto open the calendar to the current day if set
+	        if (vm.cellIsOpen && !vm.openMonthIndex) {
+	          vm.openMonthIndex = null;
+	          vm.view.forEach(function(month) {
+	            if (moment(vm.currentDay).startOf('month').isSame(month.date)) {
+	              vm.monthClicked(month, true);
+	            }
+	          });
+	        }
 
-	    });
+	      });
+	    };
 
 	    vm.monthClicked = function(month, monthClickedFirstRun, $event) {
 
@@ -948,13 +970,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  .module('mwl.calendar')
 	  .controller('MwlCollapseFallbackCtrl', ["$scope", "$attrs", "$element", function($scope, $attrs, $element) {
 
-	    $scope.$watch($attrs.mwlCollapseFallback, function(shouldCollapse) {
-	      if (shouldCollapse) {
-	        $element.addClass('ng-hide');
-	      } else {
-	        $element.removeClass('ng-hide');
-	      }
-	    });
+	    var vm = this;
+
+	    vm.$onInit = function() {
+	      $scope.$watch($attrs.mwlCollapseFallback, function(shouldCollapse) {
+	        if (shouldCollapse) {
+	          $element.addClass('ng-hide');
+	        } else {
+	          $element.removeClass('ng-hide');
+	        }
+	      });
+	    };
 
 	  }])
 	  .directive('mwlCollapseFallback', ["$injector", function($injector) {
@@ -996,11 +1022,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      $scope.$apply();
 	    }
 
-	    $element.bind('click', onClick);
+	    vm.$onInit = function() {
+	      $element.bind('click', onClick);
 
-	    $scope.$on('$destroy', function() {
-	      $element.unbind('click', onClick);
-	    });
+	      $scope.$on('$destroy', function() {
+	        $element.unbind('click', onClick);
+	      });
+	    };
 
 	  }])
 	  .directive('mwlDateModifier', function() {
@@ -1035,119 +1063,123 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return;
 	    }
 
-	    var snap, snapGridDimensions;
-	    if ($attrs.snapGrid) {
-	      snapGridDimensions = $parse($attrs.snapGrid)($scope);
-	      snap = {
-	        targets: [
-	          interact.createSnapGrid(snapGridDimensions)
-	        ]
-	      };
-	    }
+	    var vm = this;
 
-	    function translateElement(elm, transformValue) {
-	      return elm
-	        .css('-ms-transform', transformValue)
-	        .css('-webkit-transform', transformValue)
-	        .css('transform', transformValue);
-	    }
-
-	    function canDrag() {
-	      return $parse($attrs.mwlDraggable)($scope);
-	    }
-
-	    function getUnitsMoved(x, y, gridDimensions) {
-
-	      var result = {x: x, y: y};
-
-	      if (gridDimensions && gridDimensions.x) {
-	        result.x /= gridDimensions.x;
+	    vm.$onInit = function() {
+	      var snap, snapGridDimensions;
+	      if ($attrs.snapGrid) {
+	        snapGridDimensions = $parse($attrs.snapGrid)($scope);
+	        snap = {
+	          targets: [
+	            interact.createSnapGrid(snapGridDimensions)
+	          ]
+	        };
 	      }
 
-	      if (gridDimensions && gridDimensions.y) {
-	        result.y /= gridDimensions.y;
+	      function translateElement(elm, transformValue) {
+	        return elm
+	          .css('-ms-transform', transformValue)
+	          .css('-webkit-transform', transformValue)
+	          .css('transform', transformValue);
 	      }
 
-	      return result;
+	      function canDrag() {
+	        return $parse($attrs.mwlDraggable)($scope);
+	      }
 
-	    }
+	      function getUnitsMoved(x, y, gridDimensions) {
 
-	    interact($element[0]).draggable({
-	      snap: snap,
-	      onstart: function(event) {
-	        if (canDrag()) {
-	          angular.element(event.target).addClass('dragging-active');
-	          event.target.dropData = $parse($attrs.dropData)($scope);
-	          event.target.style.pointerEvents = 'none';
-	          if ($attrs.onDragStart) {
-	            $parse($attrs.onDragStart)($scope);
-	            $scope.$apply();
-	          }
-	        }
-	      },
-	      onmove: function(event) {
+	        var result = {x: x, y: y};
 
-	        if (canDrag()) {
-	          var elm = angular.element(event.target);
-	          var x = (parseFloat(elm.attr('data-x')) || 0) + (event.dx || 0);
-	          var y = (parseFloat(elm.attr('data-y')) || 0) + (event.dy || 0);
-
-	          switch ($parse($attrs.axis)($scope)) {
-	            case 'x':
-	              y = 0;
-	              break;
-
-	            case 'y':
-	              x = 0;
-	              break;
-
-	            default:
-	          }
-
-	          if ($window.getComputedStyle(elm[0]).position === 'static') {
-	            elm.css('position', 'relative');
-	          }
-
-	          translateElement(elm, 'translate(' + x + 'px, ' + y + 'px)')
-	            .css('z-index', 1000)
-	            .attr('data-x', x)
-	            .attr('data-y', y);
-
-	          if ($attrs.onDrag) {
-	            $parse($attrs.onDrag)($scope, getUnitsMoved(x, y, snapGridDimensions));
-	            $scope.$apply();
-	          }
+	        if (gridDimensions && gridDimensions.x) {
+	          result.x /= gridDimensions.x;
 	        }
 
-	      },
-	      onend: function(event) {
-
-	        if (canDrag()) {
-	          var elm = angular.element(event.target);
-	          var x = elm.attr('data-x');
-	          var y = elm.attr('data-y');
-
-	          event.target.style.pointerEvents = 'auto';
-	          if ($attrs.onDragEnd) {
-	            $parse($attrs.onDragEnd)($scope, getUnitsMoved(x, y, snapGridDimensions));
-	            $scope.$apply();
-	          }
-
-	          $timeout(function() {
-	            translateElement(elm, '')
-	              .css('z-index', 'auto')
-	              .removeAttr('data-x')
-	              .removeAttr('data-y')
-	              .removeClass('dragging-active');
-	          });
+	        if (gridDimensions && gridDimensions.y) {
+	          result.y /= gridDimensions.y;
 	        }
+
+	        return result;
 
 	      }
-	    });
 
-	    $scope.$on('$destroy', function() {
-	      interact($element[0]).unset();
-	    });
+	      interact($element[0]).draggable({
+	        snap: snap,
+	        onstart: function(event) {
+	          if (canDrag()) {
+	            angular.element(event.target).addClass('dragging-active');
+	            event.target.dropData = $parse($attrs.dropData)($scope);
+	            event.target.style.pointerEvents = 'none';
+	            if ($attrs.onDragStart) {
+	              $parse($attrs.onDragStart)($scope);
+	              $scope.$apply();
+	            }
+	          }
+	        },
+	        onmove: function(event) {
+
+	          if (canDrag()) {
+	            var elm = angular.element(event.target);
+	            var x = (parseFloat(elm.attr('data-x')) || 0) + (event.dx || 0);
+	            var y = (parseFloat(elm.attr('data-y')) || 0) + (event.dy || 0);
+
+	            switch ($parse($attrs.axis)($scope)) {
+	              case 'x':
+	                y = 0;
+	                break;
+
+	              case 'y':
+	                x = 0;
+	                break;
+
+	              default:
+	            }
+
+	            if ($window.getComputedStyle(elm[0]).position === 'static') {
+	              elm.css('position', 'relative');
+	            }
+
+	            translateElement(elm, 'translate(' + x + 'px, ' + y + 'px)')
+	              .css('z-index', 1000)
+	              .attr('data-x', x)
+	              .attr('data-y', y);
+
+	            if ($attrs.onDrag) {
+	              $parse($attrs.onDrag)($scope, getUnitsMoved(x, y, snapGridDimensions));
+	              $scope.$apply();
+	            }
+	          }
+
+	        },
+	        onend: function(event) {
+
+	          if (canDrag()) {
+	            var elm = angular.element(event.target);
+	            var x = elm.attr('data-x');
+	            var y = elm.attr('data-y');
+
+	            event.target.style.pointerEvents = 'auto';
+	            if ($attrs.onDragEnd) {
+	              $parse($attrs.onDragEnd)($scope, getUnitsMoved(x, y, snapGridDimensions));
+	              $scope.$apply();
+	            }
+
+	            $timeout(function() {
+	              translateElement(elm, '')
+	                .css('z-index', 'auto')
+	                .removeAttr('data-x')
+	                .removeAttr('data-y')
+	                .removeClass('dragging-active');
+	            });
+	          }
+
+	        }
+	      });
+
+	      $scope.$on('$destroy', function() {
+	        interact($element[0]).unset();
+	      });
+	    };
 
 	  }])
 	  .directive('mwlDraggable', function() {
@@ -1176,27 +1208,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return;
 	    }
 
-	    interact($element[0]).dropzone({
-	      ondragenter: function(event) {
-	        angular.element(event.target).addClass('drop-active');
-	      },
-	      ondragleave: function(event) {
-	        angular.element(event.target).removeClass('drop-active');
-	      },
-	      ondropdeactivate: function(event) {
-	        angular.element(event.target).removeClass('drop-active');
-	      },
-	      ondrop: function(event) {
-	        if (event.relatedTarget.dropData) {
-	          $parse($attrs.onDrop)($scope, {dropData: event.relatedTarget.dropData});
-	          $scope.$apply();
-	        }
-	      }
-	    });
+	    var vm = this;
 
-	    $scope.$on('$destroy', function() {
-	      interact($element[0]).unset();
-	    });
+	    vm.$onInit = function() {
+	      interact($element[0]).dropzone({
+	        ondragenter: function(event) {
+	          angular.element(event.target).addClass('drop-active');
+	        },
+	        ondragleave: function(event) {
+	          angular.element(event.target).removeClass('drop-active');
+	        },
+	        ondropdeactivate: function(event) {
+	          angular.element(event.target).removeClass('drop-active');
+	        },
+	        ondrop: function(event) {
+	          if (event.relatedTarget.dropData) {
+	            $parse($attrs.onDrop)($scope, {dropData: event.relatedTarget.dropData});
+	            $scope.$apply();
+	          }
+	        }
+	      });
+
+	      $scope.$on('$destroy', function() {
+	        interact($element[0]).unset();
+	      });
+	    };
 
 	  }])
 	  .directive('mwlDroppable', function() {
@@ -1221,10 +1257,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  .module('mwl.calendar')
 	  .controller('MwlElementDimensionsCtrl', ["$element", "$scope", "$parse", "$attrs", function($element, $scope, $parse, $attrs) {
 
-	    $parse($attrs.mwlElementDimensions).assign($scope, {
-	      width: $element[0].offsetWidth,
-	      height: $element[0].offsetHeight
-	    });
+	    var vm = this;
+
+	    vm.$onInit = function() {
+	      $parse($attrs.mwlElementDimensions).assign($scope, {
+	        width: $element[0].offsetWidth,
+	        height: $element[0].offsetHeight
+	      });
+	    };
 
 	  }])
 	  .directive('mwlElementDimensions', function() {
@@ -1253,121 +1293,125 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return;
 	    }
 
-	    var snap, snapGridDimensions;
-	    if ($attrs.snapGrid) {
-	      snapGridDimensions = $parse($attrs.snapGrid)($scope);
-	      snap = {
-	        targets: [
-	          interact.createSnapGrid(snapGridDimensions)
-	        ]
-	      };
-	    }
+	    var vm = this;
 
-	    var originalDimensions = {};
-	    var originalDimensionsStyle = {};
-	    var resizeEdge;
-
-	    function canResize() {
-	      return $parse($attrs.mwlResizable)($scope);
-	    }
-
-	    function getUnitsResized(edge, elm, gridDimensions) {
-	      var unitsResized = {};
-	      unitsResized.edge = edge;
-	      if (edge === 'start') {
-	        unitsResized.x = elm.data('x');
-	        unitsResized.y = elm.data('y');
-	      } else if (edge === 'end') {
-	        unitsResized.x = parseFloat(elm.css('width').replace('px', '')) - originalDimensions.width;
-	        unitsResized.y = parseFloat(elm.css('height').replace('px', '')) - originalDimensions.height;
+	    vm.$onInit = function() {
+	      var snap, snapGridDimensions;
+	      if ($attrs.snapGrid) {
+	        snapGridDimensions = $parse($attrs.snapGrid)($scope);
+	        snap = {
+	          targets: [
+	            interact.createSnapGrid(snapGridDimensions)
+	          ]
+	        };
 	      }
-	      if (gridDimensions && gridDimensions.x) {
-	        unitsResized.x = Math.round(unitsResized.x / gridDimensions.x);
-	      }
-	      if (gridDimensions && gridDimensions.y) {
-	        unitsResized.y = Math.round(unitsResized.y / gridDimensions.y);
-	      }
-	      return unitsResized;
-	    }
 
-	    interact($element[0]).resizable({
-	      edges: $parse($attrs.resizeEdges)($scope),
-	      snap: snap,
-	      onstart: function(event) {
+	      var originalDimensions = {};
+	      var originalDimensionsStyle = {};
+	      var resizeEdge;
 
-	        if (canResize()) {
-	          resizeEdge = 'end';
-	          var elm = angular.element(event.target);
-	          originalDimensions.height = elm[0].offsetHeight;
-	          originalDimensions.width = elm[0].offsetWidth;
-	          originalDimensionsStyle.height = elm.css('height');
-	          originalDimensionsStyle.width = elm.css('width');
+	      function canResize() {
+	        return $parse($attrs.mwlResizable)($scope);
+	      }
+
+	      function getUnitsResized(edge, elm, gridDimensions) {
+	        var unitsResized = {};
+	        unitsResized.edge = edge;
+	        if (edge === 'start') {
+	          unitsResized.x = elm.data('x');
+	          unitsResized.y = elm.data('y');
+	        } else if (edge === 'end') {
+	          unitsResized.x = parseFloat(elm.css('width').replace('px', '')) - originalDimensions.width;
+	          unitsResized.y = parseFloat(elm.css('height').replace('px', '')) - originalDimensions.height;
 	        }
+	        if (gridDimensions && gridDimensions.x) {
+	          unitsResized.x = Math.round(unitsResized.x / gridDimensions.x);
+	        }
+	        if (gridDimensions && gridDimensions.y) {
+	          unitsResized.y = Math.round(unitsResized.y / gridDimensions.y);
+	        }
+	        return unitsResized;
+	      }
 
-	      },
-	      onmove: function(event) {
+	      interact($element[0]).resizable({
+	        edges: $parse($attrs.resizeEdges)($scope),
+	        snap: snap,
+	        onstart: function(event) {
 
-	        if (canResize()) {
-	          var elm = angular.element(event.target);
-	          var x = parseFloat(elm.data('x') || 0);
-	          var y = parseFloat(elm.data('y') || 0);
-
-	          elm.css({
-	            width: event.rect.width + 'px',
-	            height: event.rect.height + 'px'
-	          });
-
-	          // translate when resizing from top or left edges
-	          x += event.deltaRect.left;
-	          y += event.deltaRect.top;
-
-	          elm.css('transform', 'translate(' + x + 'px,' + y + 'px)');
-
-	          elm.data('x', x);
-	          elm.data('y', y);
-
-	          if (event.deltaRect.left !== 0 || event.deltaRect.top !== 0) {
-	            resizeEdge = 'start';
+	          if (canResize()) {
+	            resizeEdge = 'end';
+	            var elm = angular.element(event.target);
+	            originalDimensions.height = elm[0].offsetHeight;
+	            originalDimensions.width = elm[0].offsetWidth;
+	            originalDimensionsStyle.height = elm.css('height');
+	            originalDimensionsStyle.width = elm.css('width');
 	          }
 
-	          if ($attrs.onResize) {
-	            $parse($attrs.onResize)($scope, getUnitsResized(resizeEdge, elm, snapGridDimensions));
-	            $scope.$apply();
+	        },
+	        onmove: function(event) {
+
+	          if (canResize()) {
+	            var elm = angular.element(event.target);
+	            var x = parseFloat(elm.data('x') || 0);
+	            var y = parseFloat(elm.data('y') || 0);
+
+	            elm.css({
+	              width: event.rect.width + 'px',
+	              height: event.rect.height + 'px'
+	            });
+
+	            // translate when resizing from top or left edges
+	            x += event.deltaRect.left;
+	            y += event.deltaRect.top;
+
+	            elm.css('transform', 'translate(' + x + 'px,' + y + 'px)');
+
+	            elm.data('x', x);
+	            elm.data('y', y);
+
+	            if (event.deltaRect.left !== 0 || event.deltaRect.top !== 0) {
+	              resizeEdge = 'start';
+	            }
+
+	            if ($attrs.onResize) {
+	              $parse($attrs.onResize)($scope, getUnitsResized(resizeEdge, elm, snapGridDimensions));
+	              $scope.$apply();
+	            }
+
+	          }
+
+	        },
+	        onend: function(event) {
+
+	          if (canResize()) {
+
+	            var elm = angular.element(event.target);
+	            var unitsResized = getUnitsResized(resizeEdge, elm, snapGridDimensions);
+
+	            $timeout(function() {
+	              elm
+	                .data('x', null)
+	                .data('y', null)
+	                .css({
+	                  transform: '',
+	                  width: originalDimensionsStyle.width,
+	                  height: originalDimensionsStyle.height
+	                });
+	            });
+
+	            if ($attrs.onResizeEnd) {
+	              $parse($attrs.onResizeEnd)($scope, unitsResized);
+	              $scope.$apply();
+	            }
 	          }
 
 	        }
+	      });
 
-	      },
-	      onend: function(event) {
-
-	        if (canResize()) {
-
-	          var elm = angular.element(event.target);
-	          var unitsResized = getUnitsResized(resizeEdge, elm, snapGridDimensions);
-
-	          $timeout(function() {
-	            elm
-	              .data('x', null)
-	              .data('y', null)
-	              .css({
-	                transform: '',
-	                width: originalDimensionsStyle.width,
-	                height: originalDimensionsStyle.height
-	              });
-	          });
-
-	          if ($attrs.onResizeEnd) {
-	            $parse($attrs.onResizeEnd)($scope, unitsResized);
-	            $scope.$apply();
-	          }
-	        }
-
-	      }
-	    });
-
-	    $scope.$on('$destroy', function() {
-	      interact($element[0]).unset();
-	    });
+	      $scope.$on('$destroy', function() {
+	        interact($element[0]).unset();
+	      });
+	    };
 
 	  }])
 	  .directive('mwlResizable', function() {

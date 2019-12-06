@@ -29,23 +29,25 @@ angular
 
     var originalLocale = moment.locale();
 
-    $scope.$on('calendar.refreshView', function() {
+    vm.$onInit = function() {
+      $scope.$on('calendar.refreshView', function() {
 
-      if (originalLocale !== moment.locale()) {
-        originalLocale = moment.locale();
+        if (originalLocale !== moment.locale()) {
+          originalLocale = moment.locale();
+          updateDays();
+        }
+
+      });
+
+      $scope.$watchGroup([
+        'vm.dayViewStart',
+        'vm.dayViewEnd',
+        'vm.dayViewSplit',
+        'vm.currentDay'
+      ], function() {
         updateDays();
-      }
-
-    });
-
-    $scope.$watchGroup([
-      'vm.dayViewStart',
-      'vm.dayViewEnd',
-      'vm.dayViewSplit',
-      'vm.currentDay'
-    ], function() {
-      updateDays();
-    });
+      });
+    };
 
   })
   .directive('mwlCalendarHourList', function(calendarUseTemplates) {

@@ -10,119 +10,123 @@ angular
       return;
     }
 
-    var snap, snapGridDimensions;
-    if ($attrs.snapGrid) {
-      snapGridDimensions = $parse($attrs.snapGrid)($scope);
-      snap = {
-        targets: [
-          interact.createSnapGrid(snapGridDimensions)
-        ]
-      };
-    }
+    var vm = this;
 
-    function translateElement(elm, transformValue) {
-      return elm
-        .css('-ms-transform', transformValue)
-        .css('-webkit-transform', transformValue)
-        .css('transform', transformValue);
-    }
-
-    function canDrag() {
-      return $parse($attrs.mwlDraggable)($scope);
-    }
-
-    function getUnitsMoved(x, y, gridDimensions) {
-
-      var result = {x: x, y: y};
-
-      if (gridDimensions && gridDimensions.x) {
-        result.x /= gridDimensions.x;
+    vm.$onInit = function() {
+      var snap, snapGridDimensions;
+      if ($attrs.snapGrid) {
+        snapGridDimensions = $parse($attrs.snapGrid)($scope);
+        snap = {
+          targets: [
+            interact.createSnapGrid(snapGridDimensions)
+          ]
+        };
       }
 
-      if (gridDimensions && gridDimensions.y) {
-        result.y /= gridDimensions.y;
+      function translateElement(elm, transformValue) {
+        return elm
+          .css('-ms-transform', transformValue)
+          .css('-webkit-transform', transformValue)
+          .css('transform', transformValue);
       }
 
-      return result;
+      function canDrag() {
+        return $parse($attrs.mwlDraggable)($scope);
+      }
 
-    }
+      function getUnitsMoved(x, y, gridDimensions) {
 
-    interact($element[0]).draggable({
-      snap: snap,
-      onstart: function(event) {
-        if (canDrag()) {
-          angular.element(event.target).addClass('dragging-active');
-          event.target.dropData = $parse($attrs.dropData)($scope);
-          event.target.style.pointerEvents = 'none';
-          if ($attrs.onDragStart) {
-            $parse($attrs.onDragStart)($scope);
-            $scope.$apply();
-          }
-        }
-      },
-      onmove: function(event) {
+        var result = {x: x, y: y};
 
-        if (canDrag()) {
-          var elm = angular.element(event.target);
-          var x = (parseFloat(elm.attr('data-x')) || 0) + (event.dx || 0);
-          var y = (parseFloat(elm.attr('data-y')) || 0) + (event.dy || 0);
-
-          switch ($parse($attrs.axis)($scope)) {
-            case 'x':
-              y = 0;
-              break;
-
-            case 'y':
-              x = 0;
-              break;
-
-            default:
-          }
-
-          if ($window.getComputedStyle(elm[0]).position === 'static') {
-            elm.css('position', 'relative');
-          }
-
-          translateElement(elm, 'translate(' + x + 'px, ' + y + 'px)')
-            .css('z-index', 1000)
-            .attr('data-x', x)
-            .attr('data-y', y);
-
-          if ($attrs.onDrag) {
-            $parse($attrs.onDrag)($scope, getUnitsMoved(x, y, snapGridDimensions));
-            $scope.$apply();
-          }
+        if (gridDimensions && gridDimensions.x) {
+          result.x /= gridDimensions.x;
         }
 
-      },
-      onend: function(event) {
-
-        if (canDrag()) {
-          var elm = angular.element(event.target);
-          var x = elm.attr('data-x');
-          var y = elm.attr('data-y');
-
-          event.target.style.pointerEvents = 'auto';
-          if ($attrs.onDragEnd) {
-            $parse($attrs.onDragEnd)($scope, getUnitsMoved(x, y, snapGridDimensions));
-            $scope.$apply();
-          }
-
-          $timeout(function() {
-            translateElement(elm, '')
-              .css('z-index', 'auto')
-              .removeAttr('data-x')
-              .removeAttr('data-y')
-              .removeClass('dragging-active');
-          });
+        if (gridDimensions && gridDimensions.y) {
+          result.y /= gridDimensions.y;
         }
+
+        return result;
 
       }
-    });
 
-    $scope.$on('$destroy', function() {
-      interact($element[0]).unset();
-    });
+      interact($element[0]).draggable({
+        snap: snap,
+        onstart: function(event) {
+          if (canDrag()) {
+            angular.element(event.target).addClass('dragging-active');
+            event.target.dropData = $parse($attrs.dropData)($scope);
+            event.target.style.pointerEvents = 'none';
+            if ($attrs.onDragStart) {
+              $parse($attrs.onDragStart)($scope);
+              $scope.$apply();
+            }
+          }
+        },
+        onmove: function(event) {
+
+          if (canDrag()) {
+            var elm = angular.element(event.target);
+            var x = (parseFloat(elm.attr('data-x')) || 0) + (event.dx || 0);
+            var y = (parseFloat(elm.attr('data-y')) || 0) + (event.dy || 0);
+
+            switch ($parse($attrs.axis)($scope)) {
+              case 'x':
+                y = 0;
+                break;
+
+              case 'y':
+                x = 0;
+                break;
+
+              default:
+            }
+
+            if ($window.getComputedStyle(elm[0]).position === 'static') {
+              elm.css('position', 'relative');
+            }
+
+            translateElement(elm, 'translate(' + x + 'px, ' + y + 'px)')
+              .css('z-index', 1000)
+              .attr('data-x', x)
+              .attr('data-y', y);
+
+            if ($attrs.onDrag) {
+              $parse($attrs.onDrag)($scope, getUnitsMoved(x, y, snapGridDimensions));
+              $scope.$apply();
+            }
+          }
+
+        },
+        onend: function(event) {
+
+          if (canDrag()) {
+            var elm = angular.element(event.target);
+            var x = elm.attr('data-x');
+            var y = elm.attr('data-y');
+
+            event.target.style.pointerEvents = 'auto';
+            if ($attrs.onDragEnd) {
+              $parse($attrs.onDragEnd)($scope, getUnitsMoved(x, y, snapGridDimensions));
+              $scope.$apply();
+            }
+
+            $timeout(function() {
+              translateElement(elm, '')
+                .css('z-index', 'auto')
+                .removeAttr('data-x')
+                .removeAttr('data-y')
+                .removeClass('dragging-active');
+            });
+          }
+
+        }
+      });
+
+      $scope.$on('$destroy', function() {
+        interact($element[0]).unset();
+      });
+    };
 
   })
   .directive('mwlDraggable', function() {

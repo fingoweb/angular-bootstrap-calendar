@@ -89,23 +89,25 @@ angular
 
     var eventsWatched = false;
 
-    //Refresh the calendar when any of these variables change.
-    $scope.$watchGroup([
-      'vm.currentDay',
-      'vm.view',
-      'vm.cellIsOpen',
-      function() {
-        return moment.locale() + $locale.id; //Auto update the calendar when the locale changes
-      }
-    ], function() {
-      if (!eventsWatched) {
-        eventsWatched = true;
-        //need to deep watch events hence why it isn't included in the watch group
-        $scope.$watch('vm.events', refreshCalendar, true); //this will call refreshCalendar when the watcher starts (i.e. now)
-      } else {
-        refreshCalendar();
-      }
-    });
+    vm.$onInit = function() {
+      //Refresh the calendar when any of these variables change.
+      $scope.$watchGroup([
+        'vm.currentDay',
+        'vm.view',
+        'vm.cellIsOpen',
+        function() {
+          return moment.locale() + $locale.id; //Auto update the calendar when the locale changes
+        }
+      ], function() {
+        if (!eventsWatched) {
+          eventsWatched = true;
+          //need to deep watch events hence why it isn't included in the watch group
+          $scope.$watch('vm.events', refreshCalendar, true); //this will call refreshCalendar when the watcher starts (i.e. now)
+        } else {
+          refreshCalendar();
+        }
+      });
+    };
 
   })
   .directive('mwlCalendar', function(calendarUseTemplates) {

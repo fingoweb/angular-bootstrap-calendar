@@ -21,21 +21,24 @@ angular
         vm.monthOffsets.push(i * 7);
       }
     };
-    vm.setCalParams();
 
-    $scope.$on('calendar.refreshView', function() {
+    vm.$onInit = function() {
       vm.setCalParams();
 
-      //Auto open the calendar to the current day if set
-      if (vm.cellIsOpen && !vm.openRowIndex) {
-        vm.openDayIndex = null;
-        vm.view.forEach(function(day) {
-          if (day.inMonth && moment(vm.currentDay).startOf('day').isSame(day.date)) {
-            vm.dayClicked(day, true);
-          }
-        });
-      }
-    });
+      $scope.$on('calendar.refreshView', function() {
+        vm.setCalParams();
+
+        //Auto open the calendar to the current day if set
+        if (vm.cellIsOpen && !vm.openRowIndex) {
+          vm.openDayIndex = null;
+          vm.view.forEach(function(day) {
+            if (day.inMonth && moment(vm.currentDay).startOf('day').isSame(day.date)) {
+              vm.dayClicked(day, true);
+            }
+          });
+        }
+      });
+    };
 
     vm.formatDate = function(date, format) {
       return moment(date).format(format);

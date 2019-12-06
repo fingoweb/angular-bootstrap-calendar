@@ -11,23 +11,25 @@ angular
     vm.calendarConfig = calendarConfig;
     vm.$sce = $sce;
 
-    $scope.$on('calendar.refreshView', function() {
-      vm.dayViewSplit = vm.dayViewSplit || 30;
-      vm.dayViewHeight = calendarHelper.getDayViewHeight(
-        vm.dayViewStart,
-        vm.dayViewEnd,
-        vm.dayViewSplit
-      );
+    vm.$onInit = function() {
+      $scope.$on('calendar.refreshView', function() {
+        vm.dayViewSplit = vm.dayViewSplit || 30;
+        vm.dayViewHeight = calendarHelper.getDayViewHeight(
+          vm.dayViewStart,
+          vm.dayViewEnd,
+          vm.dayViewSplit
+        );
 
-      vm.view = calendarHelper.getDayView(
-        vm.events,
-        vm.currentDay,
-        vm.dayViewStart,
-        vm.dayViewEnd,
-        vm.dayViewSplit
-      );
+        vm.view = calendarHelper.getDayView(
+          vm.events,
+          vm.currentDay,
+          vm.dayViewStart,
+          vm.dayViewEnd,
+          vm.dayViewSplit
+        );
 
-    });
+      });
+    };
 
     vm.eventDragComplete = function(event, minuteChunksMoved) {
       var minutesDiff = minuteChunksMoved * vm.dayViewSplit;
